@@ -1,5 +1,6 @@
 package com.easy_sale.backend.domain;
 
+import com.easy_sale.backend.domain.pagamento.Pagamento;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -26,16 +27,21 @@ public class Venda {
     @JsonIgnore
     private NotaFiscal notaFiscal;
 
+    @OneToOne(mappedBy = "venda")
+    @JsonIgnore
+    private Pagamento pagamento;
+
     private LocalDate dataVenda;
 
-    public Venda(Cliente cliente, List<ItemVenda> itensVendidos, NotaFiscal notaFiscal, LocalDate dataVenda) {
+    public Venda() {
+    }
+
+    public Venda(Cliente cliente, List<ItemVenda> itensVendidos, NotaFiscal notaFiscal, Pagamento pagamento, LocalDate dataVenda) {
         this.cliente = cliente;
         this.itensVendidos = itensVendidos;
         this.notaFiscal = notaFiscal;
+        this.pagamento = pagamento;
         this.dataVenda = dataVenda;
-    }
-
-    public Venda() {
     }
 
     public Long getId() {
@@ -54,27 +60,35 @@ public class Venda {
         this.cliente = cliente;
     }
 
-    public NotaFiscal getNotaFiscal() {
-        return notaFiscal;
-    }
-
-    public void setNotaFiscal(NotaFiscal nota_fiscal) {
-        this.notaFiscal = nota_fiscal;
-    }
-
     public List<ItemVenda> getItensVendidos() {
         return itensVendidos;
     }
 
-    public void setItensVendidos(List<ItemVenda> itens_vendidos) {
-        this.itensVendidos = itens_vendidos;
+    public void setItensVendidos(List<ItemVenda> itensVendidos) {
+        this.itensVendidos = itensVendidos;
+    }
+
+    public NotaFiscal getNotaFiscal() {
+        return notaFiscal;
+    }
+
+    public void setNotaFiscal(NotaFiscal notaFiscal) {
+        this.notaFiscal = notaFiscal;
+    }
+
+    public Pagamento getPagamento() {
+        return pagamento;
+    }
+
+    public void setPagamento(Pagamento pagamento) {
+        this.pagamento = pagamento;
     }
 
     public LocalDate getDataVenda() {
         return dataVenda;
     }
 
-    public void setDataVenda(LocalDate data_venda) {
-        this.dataVenda = data_venda;
+    public void setDataVenda(LocalDate dataVenda) {
+        this.dataVenda = dataVenda;
     }
 }

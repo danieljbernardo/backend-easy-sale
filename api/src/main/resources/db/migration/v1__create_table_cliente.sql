@@ -1,7 +1,6 @@
 create table cliente(
-    id bigserial primary key,
-    nome varchar(200),
-    cpf varchar(30),
-    telefone varchar(30),
-    email varchar(100)
-)
+    id bigserial primary key unique not null,
+    nome text not null,
+    cpf text unique not null,
+    telefone text not null,
+);

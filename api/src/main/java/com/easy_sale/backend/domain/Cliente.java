@@ -16,17 +16,15 @@ public class Cliente {
     private String nome;
     private String cpf;
     private String telefone;
-    private String email;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Venda> vendas;
 
-    public Cliente(String nome, String cpf, String telefone, String email, List<Venda> vendas) {
+    public Cliente(String nome, String cpf, String telefone, List<Venda> vendas) {
         this.nome = nome;
         this.cpf = cpf;
         this.telefone = telefone;
-        this.email = email;
         this.vendas = vendas;
     }
 
@@ -63,14 +61,6 @@ public class Cliente {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public List<Venda> getVendas() {

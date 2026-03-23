@@ -1,5 +1,8 @@
 create table usuario(
-    id bigserial primary key,
-    nome varchar(200),
-    email varchar(100) unique
-)
+    id bigserial primary key unique not null,
+    nome text not null,
+    cpf text unique not null,
+    email text unique not null,
+    senha text not null,
+    role text not null
+);
