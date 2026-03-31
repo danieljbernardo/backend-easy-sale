@@ -50,13 +50,16 @@ public class ClienteService {
         if(this.clienteRepository.findByCpf(editarClienteDTO.cpf())!=null){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("CPF já existente no sistema");
         }
-        else if(editarClienteDTO.nome().isEmpty()||editarClienteDTO.nome().isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome inválido");
-        }
-            Cliente cliente=new Cliente();
-            cliente.setNome(editarClienteDTO.nome());
-            cliente.setCpf(editarClienteDTO.cpf());
-            cliente.setTelefone(editarClienteDTO.telefone());
+            Cliente cliente=this.clienteRepository.findByCpf(editarClienteDTO.cpf());
+            if(!editarClienteDTO.nome().isBlank()){
+                cliente.setNome(editarClienteDTO.nome());
+            }
+           if(!editarClienteDTO.cpf().isBlank()){
+               cliente.setCpf(editarClienteDTO.cpf());
+           }
+           if(!editarClienteDTO.telefone().isBlank()){
+               cliente.setTelefone(editarClienteDTO.telefone());
+           }
 
         this.clienteRepository.save(cliente);
         return ResponseEntity.ok().build();

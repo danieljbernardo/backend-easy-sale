@@ -3,18 +3,19 @@ package com.easy_sale.backend.domain.venda.pagamento;
 public enum FormaPagamento {
 
     PIX("pix"),
-    CARTAO("cartão"),
+    CARTAOCREDITO("cartão crédito"),
+    CARTAODEBITO("cartão débito"),
     BOLETO("boleto"),
     DINHEIRO("dinheiro");
 
-    private String formaPagamento;
+    private final String formaPagamentoString;
 
     FormaPagamento(String formaPagamento){
-        this.formaPagamento=formaPagamento;
+        this.formaPagamentoString=formaPagamento;
     }
 
-    public String getFormaPagamento(){
-        return formaPagamento;
+    public String getFormaPagamentoString(){
+        return formaPagamentoString;
     }
 
 }

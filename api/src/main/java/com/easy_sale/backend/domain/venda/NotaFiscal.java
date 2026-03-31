@@ -1,6 +1,7 @@
 package com.easy_sale.backend.domain.venda;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,38 +13,23 @@ public class NotaFiscal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long numeroNota;
 
     @OneToOne
     @JoinColumn(name = "venda_id")
     private Venda venda;
 
-    private BigDecimal valorTotal=BigDecimal.ZERO;
+    private BigDecimal subTotal=BigDecimal.ZERO;
+
+    @CreationTimestamp
     private LocalDateTime dataEmissao;
 
-    @PrePersist
-    public void salvaData(){
-        this.dataEmissao=LocalDateTime.now();
-
-    }
-
-    public NotaFiscal(BigDecimal valorTotal, Venda venda) {
-        this.valorTotal = valorTotal;
+    public NotaFiscal(BigDecimal subTotal, Venda venda) {
+        this.subTotal = subTotal;
         this.venda = venda;
     }
 
     public NotaFiscal() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Venda getVenda() {
@@ -55,11 +41,11 @@ public class NotaFiscal {
     }
 
     public BigDecimal getValorTotal() {
-        return valorTotal;
+        return subTotal;
     }
 
     public void setValorTotal(BigDecimal valorTotal) {
-        this.valorTotal = valorTotal;
+        this.subTotal = valorTotal;
     }
 
     public Long getNumeroNota() {

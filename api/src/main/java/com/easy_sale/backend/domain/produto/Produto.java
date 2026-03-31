@@ -1,6 +1,6 @@
 package com.easy_sale.backend.domain.produto;
 
-import com.easy_sale.backend.domain.venda.ItemVenda;
+import com.easy_sale.backend.domain.venda.itemVenda.ItemVenda;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 

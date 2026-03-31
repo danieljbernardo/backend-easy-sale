@@ -8,26 +8,21 @@ import org.hibernate.validator.constraints.br.CPF;
 
 public record UsuarioDTO(
 
-        @NotNull
         @NotBlank
         String nome,
 
-        @NotNull
         @NotBlank
         @CPF
         String cpf,
 
-        @NotNull
         @NotBlank
         @Email
         String email,
 
-        @NotNull
         @NotBlank
         @Size(min = 8)
         String senha,
 
-        @NotNull
         @NotBlank
         String role
 

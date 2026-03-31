@@ -7,12 +7,10 @@ import jakarta.validation.constraints.Size;
 
 public record AutenticacaoDTO(
 
-        @NotNull
         @NotBlank
         @Email
         String email,
 
-        @NotNull
         @NotBlank
         @Size(min = 8)
         String senha

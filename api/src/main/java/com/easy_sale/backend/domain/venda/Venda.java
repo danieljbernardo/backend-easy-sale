@@ -1,13 +1,14 @@
 package com.easy_sale.backend.domain.venda;
 
 import com.easy_sale.backend.domain.cliente.Cliente;
+import com.easy_sale.backend.domain.venda.itemVenda.ItemVenda;
 import com.easy_sale.backend.domain.venda.pagamento.Pagamento;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -36,13 +37,8 @@ public class Venda {
 
     private BigDecimal valorTotal=BigDecimal.ZERO;
 
-    private LocalDateTime dataVenda;
-
-    @PrePersist
-    public void salvaData(){
-        this.dataVenda=LocalDateTime.now();
-
-    }
+    @CreationTimestamp
+    private LocalDate dataVenda;
 
     public Venda() {
     }
@@ -94,11 +90,11 @@ public class Venda {
         this.pagamento = pagamento;
     }
 
-    public LocalDateTime getDataVenda() {
+    public LocalDate getDataVenda() {
         return dataVenda;
     }
 
-    public void setDataVenda(LocalDateTime dataVenda) {
+    public void setDataVenda(LocalDate dataVenda) {
         this.dataVenda = dataVenda;
     }
 

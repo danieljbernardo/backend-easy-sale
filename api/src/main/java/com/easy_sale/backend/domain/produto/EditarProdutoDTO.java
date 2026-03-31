@@ -10,6 +10,7 @@ public record EditarProdutoDTO(
 
         @Min(100)
         @Max(999)
+        @NotNull
         Long codigo,
 
         @DecimalMin(value = "0.0", inclusive = false)

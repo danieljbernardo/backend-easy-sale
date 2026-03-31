@@ -45,16 +45,20 @@ public class ProdutoService {
     public ResponseEntity editandoProduto(EditarProdutoDTO editarProdutoDTO) {
         if (this.produtoRepository.findByCodigo(editarProdutoDTO.codigo()) != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Produto já existente no sistema");
-        } else if (editarProdutoDTO.nome().isEmpty() || editarProdutoDTO.nome().isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome inválido");
-        } else if (editarProdutoDTO.descricao().isEmpty() || editarProdutoDTO.descricao().isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Descrição inválida");
         }
-        Produto produto = new Produto();
-        produto.setNome(editarProdutoDTO.nome());
-        produto.setDescricao(editarProdutoDTO.descricao());
-        produto.setCodigo(editarProdutoDTO.codigo());
-        produto.setPreco(editarProdutoDTO.preco());
+        Produto produto=this.produtoRepository.findByCodigo(editarProdutoDTO.codigo());
+        if(!editarProdutoDTO.nome().isBlank()){
+            produto.setNome(editarProdutoDTO.nome());
+        }
+        if(!editarProdutoDTO.descricao().isBlank()){
+            produto.setDescricao(editarProdutoDTO.descricao());
+        }
+        if(editarProdutoDTO.codigo()!=null){
+            produto.setCodigo(editarProdutoDTO.codigo());
+        }
+        if(editarProdutoDTO.preco()!=null){
+            produto.setPreco(editarProdutoDTO.preco());
+        }
 
         this.produtoRepository.save(produto);
         return ResponseEntity.ok().build();

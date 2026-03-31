@@ -2,6 +2,9 @@ package com.easy_sale.backend.service;
 
 import com.easy_sale.backend.domain.produto.Produto;
 import com.easy_sale.backend.domain.venda.*;
+import com.easy_sale.backend.domain.venda.itemVenda.EditarItemVendaDTO;
+import com.easy_sale.backend.domain.venda.itemVenda.EnviarItemVendaDTO;
+import com.easy_sale.backend.domain.venda.itemVenda.ItemVenda;
 import com.easy_sale.backend.domain.venda.pagamento.FormaPagamento;
 import com.easy_sale.backend.domain.venda.pagamento.Pagamento;
 import com.easy_sale.backend.repository.*;
@@ -15,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VendaService {
@@ -36,15 +38,14 @@ public class VendaService {
     NotaFiscalRepository notaFiscalRepository;
 
     @Autowired
-    GerarPdfService pdfService;
+    PagamentoRepository pagamentoRepository;
+
+    @Autowired
+    PdfService pdfService;
 
     public ResponseEntity<byte[]> cadastrandoVenda(VendaDTO vendaDTO) {
-
         Venda venda = new Venda();
         venda.setCliente(this.clienteRepository.findByCpf(vendaDTO.cpf()));
-        FormaPagamento formaPagamento = FormaPagamento.valueOf(vendaDTO.formaPagamento().toUpperCase());
-        Pagamento pagamento = new Pagamento(venda, formaPagamento);
-        venda.setPagamento(pagamento);
 
         List<Long> produtos = Arrays.stream(vendaDTO.produtos().split(","))
                 .map(Long::parseLong)
@@ -72,18 +73,22 @@ public class VendaService {
             itemVenda.setPrecoUnitario(produto.getPreco());
 
             BigDecimal quantidadeBigDecimal = new BigDecimal(quantidade);
-            valorDaVenda = itemVenda.getPrecoUnitario().multiply(quantidadeBigDecimal);
-
-            itemVendaRepository.save(itemVenda);
-            venda.setValorTotal(valorDaVenda);
+            valorDaVenda = valorDaVenda.add(itemVenda.getPrecoUnitario().multiply(quantidadeBigDecimal));
+            this.itemVendaRepository.save(itemVenda);
         }
 
+        venda.setValorTotal(valorDaVenda);
+
+        FormaPagamento formaPagamento = FormaPagamento.valueOf(vendaDTO.formaPagamento().toUpperCase());
+        Pagamento pagamento = new Pagamento(venda, formaPagamento);
+        venda.setPagamento(pagamento);
         NotaFiscal notaFiscal = new NotaFiscal(venda.getValorTotal(), venda);
         venda.setNotaFiscal(notaFiscal);
-        vendaRepository.save(venda);
-        notaFiscalRepository.save(notaFiscal);
+        this.notaFiscalRepository.save(notaFiscal);
+        this.pagamentoRepository.save(pagamento);
+        this.vendaRepository.save(venda);
 
-        byte[] pdfNotaFiscal = pdfService.gerarPdfNotaFiscal(notaFiscal, venda);
+        byte[] pdfNotaFiscal = this.pdfService.gerarNotaFiscal(notaFiscal, venda);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
@@ -94,11 +99,61 @@ public class VendaService {
     }
 
     public ResponseEntity deletandoVenda(Long id) {
-        if (vendaRepository.findByIdVenda(id) == null) {
+        if (this.vendaRepository.findByIdVenda(id) == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(("Essa venda já não existe no sistema"));
         }
-        Venda venda = vendaRepository.findByIdVenda(id);
-        vendaRepository.delete(venda);
+        Venda venda = this.vendaRepository.findByIdVenda(id);
+        this.vendaRepository.delete(venda);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity buscandoVenda(BuscarVendaDTO buscarVendaDTO){
+        List<Venda> vendas=this.vendaRepository.findByCpfData(buscarVendaDTO.cpf(), buscarVendaDTO.data());
+        List<EnviarVendaDTO> resposta=vendas.stream()
+                .map(venda->{
+
+                        List<EnviarItemVendaDTO> itensDTO=this.itemVendaRepository.findByVenda(venda).stream()
+                                .map(itemVenda -> new EnviarItemVendaDTO( itemVenda.getId(),
+                                        itemVenda.getProduto().getCodigo(), itemVenda.getProduto().getNome(), itemVenda.getQuantidade(),
+                                        itemVenda.getPrecoUnitario()
+                                ))
+                                .toList();
+
+                       return new EnviarVendaDTO(venda.getCliente().getCpf(),venda.getNotaFiscal().getNumeroNota(),
+                        venda.getPagamento().getFormaPagamento().getFormaPagamentoString(),
+                        venda.getValorTotal(), venda.getDataVenda(), itensDTO);
+                })
+                .toList();
+        return ResponseEntity.ok().body(resposta);
+    }
+
+    public ResponseEntity editandoVenda(EditarVendaDTO editarVendaDTO){
+        if(this.clienteRepository.findByCpf(editarVendaDTO.clienteCpf())!=null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("CPF já existente no sistema");
+        }
+        if(this.notaFiscalRepository.findByNumeroNota(editarVendaDTO.notaFiscalNumero())!=null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Número de nota fiscal já existente no sistema");
+        }
+        Venda venda=this.vendaRepository.findByIdVenda(editarVendaDTO.notaFiscalNumero());
+        if(!editarVendaDTO.clienteCpf().isBlank()){
+            venda.setCliente(this.clienteRepository.findByCpf(editarVendaDTO.clienteCpf()));
+        }
+        if(editarVendaDTO.notaFiscalNumero()!=null){
+            venda.setNotaFiscal(this.notaFiscalRepository.findByNumeroNota(editarVendaDTO.notaFiscalNumero()));
+        }
+        if(!editarVendaDTO.pagamentoForma().isBlank()){
+            FormaPagamento formaPagamento=FormaPagamento.valueOf(editarVendaDTO.pagamentoForma().toUpperCase());
+            Pagamento pagamento=this.pagamentoRepository.findByVenda(venda);
+            pagamento.setFormaPagamento(formaPagamento);
+            venda.setPagamento(pagamento);
+        }
+        if(editarVendaDTO.valorTotal()!=null){
+            venda.setValorTotal(editarVendaDTO.valorTotal());
+        }
+        if(editarVendaDTO.dataVenda()!=null){
+            venda.setDataVenda(editarVendaDTO.dataVenda());
+        }
+        this.vendaRepository.save(venda);
         return ResponseEntity.ok().build();
     }
 

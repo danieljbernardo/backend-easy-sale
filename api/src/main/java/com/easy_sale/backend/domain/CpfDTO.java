@@ -6,7 +6,6 @@ import org.hibernate.validator.constraints.br.CPF;
 
 public record CpfDTO (
 
-        @NotNull
         @NotBlank
         @CPF
         String cpf

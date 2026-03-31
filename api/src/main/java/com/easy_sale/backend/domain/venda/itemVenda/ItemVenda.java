@@ -1,6 +1,7 @@
-package com.easy_sale.backend.domain.venda;
+package com.easy_sale.backend.domain.venda.itemVenda;
 
 import com.easy_sale.backend.domain.produto.Produto;
+import com.easy_sale.backend.domain.venda.Venda;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -66,4 +67,11 @@ public class ItemVenda {
         this.precoUnitario = precoUnitario;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

@@ -8,16 +8,13 @@ import org.hibernate.validator.constraints.br.CPF;
 
 public record ClienteDTO(
 
-        @NotNull
         @NotBlank
         String nome,
 
-        @NotNull
         @NotBlank
         @CPF
         String cpf,
 
-        @NotNull
         @NotBlank
         @Pattern(regexp = "^(\\+55\\s?)?\\(?\\d{2}\\)?\\s?(9?\\d{4})-?\\d{4}$")
         String telefone

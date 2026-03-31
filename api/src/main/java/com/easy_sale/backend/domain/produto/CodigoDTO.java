@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 public record CodigoDTO (
 
         @NotNull
-        @NotBlank
         @Min(value = 100)
         @Max(value = 999)
         Long codigo

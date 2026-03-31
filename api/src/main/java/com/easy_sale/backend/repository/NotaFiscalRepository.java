@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NotaFiscalRepository extends JpaRepository<NotaFiscal, Long> {
+
+    NotaFiscal findByNumeroNota(Long numeroNota);
 }

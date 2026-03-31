@@ -1,7 +1,10 @@
 package com.easy_sale.backend.controller;
 
 import com.easy_sale.backend.domain.produto.CodigoDTO;
+import com.easy_sale.backend.domain.venda.BuscarVendaDTO;
+import com.easy_sale.backend.domain.venda.EditarVendaDTO;
 import com.easy_sale.backend.domain.venda.VendaDTO;
+import com.easy_sale.backend.domain.venda.itemVenda.EditarItemVendaDTO;
 import com.easy_sale.backend.service.VendaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +31,13 @@ public class VendaController {
     }
 
     @PostMapping("/buscar-venda")
-    public ResponseEntity buscarVenda(@PathVariable @Valid Long codigo){
-
+    public ResponseEntity buscarVenda(@RequestBody @Valid BuscarVendaDTO buscarVendaDTO){
+        return vendaService.buscandoVenda(buscarVendaDTO);
     }
+
+    @PatchMapping("/editar-venda")
+    public ResponseEntity editarVenda(@RequestBody @Valid EditarVendaDTO editarVendaDTO){
+        return vendaService.editandoVenda(editarVendaDTO);
+    }
+
 }
